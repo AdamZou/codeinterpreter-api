@@ -66,6 +66,7 @@ class CodeInterpreterSession:
         _handle_deprecated_kwargs(kwargs)
         self.codebox = CodeBox(requirements=settings.CUSTOM_PACKAGES)
         self.verbose = kwargs.get("verbose", settings.DEBUG)
+        self.handle_parsing_errors = kwargs.get("handle_parsing_errors", True)
         self.tools: list[BaseTool] = self._tools(additional_tools)
         self.llm: BaseLanguageModel = llm or self._choose_llm()
         self.callbacks = callbacks
@@ -215,6 +216,7 @@ class CodeInterpreterSession:
                 chat_memory=self._history_backend(),
             ),
             callbacks=self.callbacks,
+            handle_parsing_errors=self.handle_parsing_errors,
         )
 
     def show_code(self, code: str) -> None:
