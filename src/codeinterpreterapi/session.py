@@ -74,6 +74,7 @@ class CodeInterpreterSession:
         self.input_files: list[File] = []
         self.output_files: list[File] = []
         self.code_log: list[tuple[str, str]] = []
+        print("Using customized repo. handle_parsing_errors=", self.handle_parsing_errors)
 
     @classmethod
     def from_id(cls, session_id: UUID, **kwargs: Any) -> "CodeInterpreterSession":
