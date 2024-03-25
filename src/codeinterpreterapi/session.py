@@ -67,6 +67,11 @@ class CodeInterpreterSession:
         self.codebox = CodeBox(requirements=settings.CUSTOM_PACKAGES)
         self.verbose = kwargs.get("verbose", settings.DEBUG)
         self.handle_parsing_errors = kwargs.get("handle_parsing_errors", True)
+        self.memory = kwargs.get("memory", ConversationBufferMemory(
+                memory_key="chat_history",
+                return_messages=True,
+                chat_memory=self._history_backend(),
+            ))
         self.tools: list[BaseTool] = self._tools(additional_tools)
         self.llm: BaseLanguageModel = llm or self._choose_llm()
         self.callbacks = callbacks
@@ -211,11 +216,7 @@ class CodeInterpreterSession:
             max_iterations=settings.MAX_ITERATIONS,
             tools=self.tools,
             verbose=self.verbose,
-            memory=ConversationBufferMemory(
-                memory_key="chat_history",
-                return_messages=True,
-                chat_memory=self._history_backend(),
-            ),
+            memory=self.memory,
             callbacks=self.callbacks,
             handle_parsing_errors=self.handle_parsing_errors,
         )
