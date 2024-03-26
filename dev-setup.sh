@@ -1,3 +1,6 @@
+#!/bin/bash
+# run with '. dev-setup.sh'
+
 # AUTO DEV SETUP
 
 # check if rye is installed
@@ -8,11 +11,14 @@ then
     echo "Check the rye docs for more info: https://rye-up.com/"
 fi
 
+source "$HOME/.rye/env"
+
 echo "SYNC: setup .venv"
 rye sync
 
 echo "ACTIVATE: activate .venv"
-rye shell
+. .venv/bin/activate
+# use 'deactivate' to exit the virtual environment
 
 echo "SETUP: install pre-commit hooks"
 pre-commit install
