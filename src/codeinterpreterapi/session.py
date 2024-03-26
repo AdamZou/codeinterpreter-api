@@ -65,13 +65,16 @@ class CodeInterpreterSession:
     ) -> None:
         _handle_deprecated_kwargs(kwargs)
         self.codebox = CodeBox(requirements=settings.CUSTOM_PACKAGES)
-        self.verbose = kwargs.get("verbose", settings.DEBUG)
+        self.verbose = kwargs.get("verbose", settings.VERBOSE)
         self.handle_parsing_errors = kwargs.get("handle_parsing_errors", True)
-        self.memory = kwargs.get("memory", ConversationBufferMemory(
+        self.memory = kwargs.get(
+            "memory",
+            ConversationBufferMemory(
                 memory_key="chat_history",
                 return_messages=True,
                 chat_memory=self._history_backend(),
-            ))
+            ),
+        )
         self.tools: list[BaseTool] = self._tools(additional_tools)
         self.llm: BaseLanguageModel = llm or self._choose_llm()
         self.callbacks = callbacks
@@ -79,7 +82,12 @@ class CodeInterpreterSession:
         self.input_files: list[File] = []
         self.output_files: list[File] = []
         self.code_log: list[tuple[str, str]] = []
-        print("Using customized repo. handle_parsing_errors=", self.handle_parsing_errors)
+        print(
+            "Using customized repo. handle_parsing_errors=",
+            self.handle_parsing_errors,
+            " verbose=",
+            self.verbose,
+        )
 
     @classmethod
     def from_id(cls, session_id: UUID, **kwargs: Any) -> "CodeInterpreterSession":

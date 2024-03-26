@@ -15,7 +15,7 @@ class CodeInterpreterAPISettings(BaseSettings):
     CodeInterpreter API Config
     """
 
-    DEBUG: bool = False
+    VERBOSE: bool = False
 
     # Models
     OPENAI_API_KEY: Optional[str] = None
@@ -44,7 +44,7 @@ class CodeInterpreterAPISettings(BaseSettings):
     CUSTOM_PACKAGES: list[str] = []
 
     # deprecated
-    VERBOSE: bool = DEBUG
+    DEBUG: bool = VERBOSE
 
 
 settings = CodeInterpreterAPISettings()
