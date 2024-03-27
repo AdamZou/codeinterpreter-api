@@ -6,14 +6,20 @@ from codeinterpreterapi import CodeInterpreterSession, File
 def test_codebox() -> None:
     session = CodeInterpreterSession()
     assert run_sync(session), "Failed to run sync CodeInterpreterSession remotely"
+    session = CodeInterpreterSession()
     assert asyncio.run(
         run_async(session)
     ), "Failed to run async CodeInterpreterSession remotely"
 
 
 def test_localbox() -> None:
-    session = CodeInterpreterSession(local=True)
+    session = CodeInterpreterSession(
+        custom_packages=["openpyxl", "yfinance"], local=True
+    )
     assert run_sync(session), "Failed to run sync CodeInterpreterSession locally"
+    session = CodeInterpreterSession(
+        custom_packages=["openpyxl", "yfinance"], local=True
+    )
     assert asyncio.run(
         run_async(session)
     ), "Failed to run async CodeInterpreterSession locally"
@@ -22,7 +28,6 @@ def test_localbox() -> None:
 def run_sync(session: CodeInterpreterSession) -> bool:
     try:
         assert session.start() == "started"
-
         assert (
             "3.1"
             in session.generate_response(
@@ -58,7 +63,6 @@ def run_sync(session: CodeInterpreterSession) -> bool:
 async def run_async(session: CodeInterpreterSession) -> bool:
     try:
         assert (await session.astart()) == "started"
-
         assert (
             "3.1"
             in (
@@ -81,7 +85,7 @@ async def run_async(session: CodeInterpreterSession) -> bool:
         )
 
         assert (
-            ".jpeg"
+            ".png"
             in (
                 await session.agenerate_response(
                     "Plot the current stock price of Tesla.",

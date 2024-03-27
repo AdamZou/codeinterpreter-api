@@ -53,6 +53,7 @@ def _handle_deprecated_kwargs(kwargs: dict) -> None:
     settings.OPENAI_API_KEY = kwargs.get("openai_api_key", settings.OPENAI_API_KEY)
     settings.SYSTEM_MESSAGE = kwargs.get("system_message", settings.SYSTEM_MESSAGE)
     settings.MAX_ITERATIONS = kwargs.get("max_iterations", settings.MAX_ITERATIONS)
+    settings.CUSTOM_PACKAGES = kwargs.get("custom_packages", settings.CUSTOM_PACKAGES)
 
 
 class CodeInterpreterSession:
@@ -64,7 +65,10 @@ class CodeInterpreterSession:
         **kwargs: Any,
     ) -> None:
         _handle_deprecated_kwargs(kwargs)
-        self.codebox = CodeBox(requirements=settings.CUSTOM_PACKAGES)
+        if kwargs.pop("local", False):
+            self.codebox = CodeBox(requirements=settings.CUSTOM_PACKAGES, local=True)
+        else:
+            self.codebox = CodeBox(requirements=settings.CUSTOM_PACKAGES)
         self.verbose = kwargs.get("verbose", settings.VERBOSE)
         self.handle_parsing_errors = kwargs.get("handle_parsing_errors", True)
         self.memory = kwargs.get(
@@ -104,7 +108,7 @@ class CodeInterpreterSession:
         status = SessionStatus.from_codebox_status(self.codebox.start())
         self.agent_executor = self._agent_executor()
         self.codebox.run(
-            f"!pip install -q {' '.join(settings.CUSTOM_PACKAGES)}",
+            f"%pip install {' '.join(settings.CUSTOM_PACKAGES)}",  # Using %pip to ensure the package is installed to the Notebook's Environment.
         )
         return status
 
@@ -112,7 +116,7 @@ class CodeInterpreterSession:
         status = SessionStatus.from_codebox_status(await self.codebox.astart())
         self.agent_executor = self._agent_executor()
         await self.codebox.arun(
-            f"!pip install -q {' '.join(settings.CUSTOM_PACKAGES)}",
+            f"%pip install {' '.join(settings.CUSTOM_PACKAGES)}",
         )
         return status
 
@@ -241,8 +245,10 @@ class CodeInterpreterSession:
     def _run_handler(self, code: str) -> str:
         """Run code in container and send the output to the user"""
         self.show_code(code)
+        file_list = self.codebox.list_files()
         output: CodeBoxOutput = self.codebox.run(code)
         self.code_log.append((code, output.content))
+        new_file_list = self.codebox.list_files()
 
         if not isinstance(output.content, str):
             raise TypeError("Expected output.content to be a string.")
@@ -253,6 +259,25 @@ class CodeInterpreterSession:
             file_buffer.name = filename
             self.output_files.append(File(name=filename, content=file_buffer.read()))
             return f"Image {filename} got send to the user."
+
+        elif (
+            len(new_file_list) > len(file_list)
+        ):  # File transfer for non-image files. We choose this implementation logic because the codebox.list_files()'s file order is not deterministic.
+            input_file_names = set([file.name for file in self.input_files])
+            old_file_names = set([file.name for file in file_list])
+            for file in new_file_list:
+                filename = file.name
+                if (filename in input_file_names) or (filename in old_file_names):
+                    continue
+
+                fileb = self.codebox.download(filename)
+                if not fileb.content:
+                    continue
+                file_buffer = BytesIO(fileb.content)
+                file_buffer.name = filename
+                self.output_files.append(
+                    File(name=filename, content=file_buffer.read())
+                )
 
         elif output.type == "error":
             if "ModuleNotFoundError" in output.content:
@@ -289,8 +314,10 @@ class CodeInterpreterSession:
     async def _arun_handler(self, code: str) -> str:
         """Run code in container and send the output to the user"""
         await self.ashow_code(code)
+        file_list = await self.codebox.alist_files()
         output: CodeBoxOutput = await self.codebox.arun(code)
         self.code_log.append((code, output.content))
+        new_file_list = await self.codebox.alist_files()
 
         if not isinstance(output.content, str):
             raise TypeError("Expected output.content to be a string.")
@@ -301,6 +328,23 @@ class CodeInterpreterSession:
             file_buffer.name = filename
             self.output_files.append(File(name=filename, content=file_buffer.read()))
             return f"Image {filename} got send to the user."
+
+        elif len(new_file_list) > len(file_list):  # File transfer for non-image files.
+            input_file_names = set([file.name for file in self.input_files])
+            old_file_names = set([file.name for file in file_list])
+            for file in new_file_list:
+                filename = file.name
+                if (filename in input_file_names) or (filename in old_file_names):
+                    continue
+
+                fileb = self.codebox.download(filename)
+                if not fileb.content:
+                    continue
+                file_buffer = BytesIO(fileb.content)
+                file_buffer.name = filename
+                self.output_files.append(
+                    File(name=filename, content=file_buffer.read())
+                )
 
         elif output.type == "error":
             if "ModuleNotFoundError" in output.content:
