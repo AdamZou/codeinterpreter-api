@@ -12,6 +12,7 @@ dependencies = [
     "python-dotenv",
     "pydantic>=2",
     "pydantic-settings>=2",
+    "pip>=24.0",
 ]
 license = { file = "LICENSE" }
 readme = "README.md"
