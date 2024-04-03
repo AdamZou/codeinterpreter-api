@@ -1,4 +1,7 @@
 from codeinterpreterapi.chains import remove_download_link, get_file_modifications
+from codeinterpreterapi import CodeInterpreterSession
+
+llm = CodeInterpreterSession()._choose_llm()
 
 
 def test_remove_download_link() -> None:
@@ -7,7 +10,7 @@ def test_remove_download_link() -> None:
         "Link to the file [here](sandbox:/plot.png)."
     )
     assert (
-        remove_download_link(example).formatted_response.strip()
+        remove_download_link(example, llm).strip()
         == "I have created the plot to your dataset."
     )
 
@@ -28,8 +31,8 @@ def test_get_file_modifications() -> None:
 
     code_no_mod = base_code + "\nplt.show()"
 
-    assert get_file_modifications(code_with_mod).modifications == ["plot.png"]
-    assert get_file_modifications(code_no_mod).modifications == []
+    assert get_file_modifications(code_with_mod, llm) == ["plot.png"]
+    assert get_file_modifications(code_no_mod, llm) == []
 
 
 if __name__ == "__main__":
