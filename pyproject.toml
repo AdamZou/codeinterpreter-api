@@ -1,9 +1,9 @@
 [project]
-name = "codeinterpreterapi"
+name = "codeinterpreterapi_yayi"
 version = "0.1.15"
 description = "CodeInterpreterAPI is an (unofficial) open source python interface for the ChatGPT CodeInterpreter."
 authors = [
-    { name = "Shroominic", email = "contact@shroominic.com" }
+    { name = "AdamZou", email = "yz725@cornell.edu" }
 ]
 dependencies = [
     "openai",
@@ -27,8 +27,7 @@ classifiers = [
 ]
 
 [project.urls]
-Code = "https://github.com/shroominic/codeinterpreter-api"
-Docs = "https://shroominic.github.io/codeinterpreter-api"
+Code = "https://github.com/AdamZou/codeinterpreter-api.git"
 
 [build-system]
 requires = ["hatchling"]

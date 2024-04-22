@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from langchain.pydantic_v1 import BaseSettings, SecretStr
 from langchain.schema import SystemMessage
 
-from codeinterpreterapi.prompts import code_interpreter_system_message
+from codeinterpreterapi_yayi.prompts import code_interpreter_system_message
 
 # .env file
 load_dotenv(dotenv_path="./.env")

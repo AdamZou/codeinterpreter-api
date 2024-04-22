@@ -4,7 +4,7 @@ from typing import List, Optional
 from langchain.base_language import BaseLanguageModel
 from langchain.chat_models.anthropic import ChatAnthropic
 
-from codeinterpreterapi.prompts import determine_modifications_prompt
+from codeinterpreterapi_yayi.prompts import determine_modifications_prompt
 
 
 def get_file_modifications(

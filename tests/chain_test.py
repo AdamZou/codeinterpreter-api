@@ -1,5 +1,5 @@
-from codeinterpreterapi.chains import remove_download_link, get_file_modifications
-from codeinterpreterapi import CodeInterpreterSession
+from codeinterpreterapi_yayi.chains import remove_download_link, get_file_modifications
+from codeinterpreterapi_yayi import CodeInterpreterSession
 
 llm = CodeInterpreterSession()._choose_llm()
 

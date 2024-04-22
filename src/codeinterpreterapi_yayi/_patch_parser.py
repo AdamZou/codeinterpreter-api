@@ -106,4 +106,6 @@ def patch() -> None:
     """Patch the parser."""
     from langchain.agents import openai_functions_agent
 
-    openai_functions_agent.OpenAIFunctionsAgentOutputParser = OpenAIFunctionsAgentOutputParser  # type: ignore
+    openai_functions_agent.OpenAIFunctionsAgentOutputParser = (
+        OpenAIFunctionsAgentOutputParser  # type: ignore
+    )

@@ -29,15 +29,15 @@ from langchain.prompts.chat import MessagesPlaceholder
 from langchain.schema import BaseChatMessageHistory
 from langchain.tools import BaseTool, StructuredTool
 
-from codeinterpreterapi.chains import (
+from codeinterpreterapi_yayi.chains import (
     aget_file_modifications,
     aremove_download_link,
     get_file_modifications,
     remove_download_link,
 )
-from codeinterpreterapi.chat_history import CodeBoxChatMessageHistory
-from codeinterpreterapi.config import settings
-from codeinterpreterapi.schema import (
+from codeinterpreterapi_yayi.chat_history import CodeBoxChatMessageHistory
+from codeinterpreterapi_yayi.config import settings
+from codeinterpreterapi_yayi.schema import (
     CodeInput,
     CodeInterpreterResponse,
     File,

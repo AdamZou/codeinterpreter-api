@@ -1,6 +1,6 @@
 import asyncio
 
-from codeinterpreterapi import CodeInterpreterSession, File
+from codeinterpreterapi_yayi import CodeInterpreterSession, File
 
 
 def test_codebox() -> None:

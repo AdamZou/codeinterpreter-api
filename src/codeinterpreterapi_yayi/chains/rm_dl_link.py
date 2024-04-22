@@ -2,7 +2,7 @@ from langchain.base_language import BaseLanguageModel
 from langchain.chat_models.openai import ChatOpenAI
 from langchain.schema import AIMessage, OutputParserException
 
-from codeinterpreterapi.prompts import remove_dl_link_prompt
+from codeinterpreterapi_yayi.prompts import remove_dl_link_prompt
 
 
 def remove_download_link(
